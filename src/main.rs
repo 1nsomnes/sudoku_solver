@@ -1,6 +1,3 @@
-extern crate array_tool;
-use array_tool::vec::Intersect;
-
 fn main() {
 
 }
@@ -54,12 +51,22 @@ fn sudoku(puzzle: &mut [[u8; 9]; 9]) {
         }
     };
 
+    let mut intersection = |vec1:&mut Vec<u8>, vec2:&mut Vec<u8>| -> Vec<u8> {
+        let mut result:Vec<u8> = Vec::new();
+        for num in vec1 {
+            if vec2.contains(num) && !result.contains(num) {
+                result.push(num.clone());
+            }
+        }
+        result
+    };
+
     let mut attempt_solve = |coords:(usize,usize)|  -> Option<u8> {
         let row = &mut row_missing_values[coords.1];
         let column = &mut columns_missing_values[coords.0];
         let rbox = &mut boxes_missing_values[coords.1/3][coords.0/3];
 
-        let intersections = row.intersect(column.to_vec()).intersect(rbox.to_vec());
+        let intersections = intersection(rbox, &mut intersection(row, column));
 
         print!("\nIntersections at ({},{}):",coords.0,coords.1);
         intersections.iter().for_each(|i| print!("{},", i));
